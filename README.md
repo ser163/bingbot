@@ -3,14 +3,14 @@
    一个python scrapy 框架写的爬虫可以实现,同步bing搜索的背景.
 ## 安装环境
   ```
-     pip -r requirements.txt
+     pip install -r requirements.txt
   ```
 ## 运行
 ```
    scrapy crawl binbot
 ```
 
-## pyinstaller 打包为
+## pyinstaller 打包:
 ```shell
     pyinstaller --add-data="scrapy\mime.types;scrapy" --add-data="scrapy\VERSION;scrapy" --add-data="scrapy.cfg;." --add-data="bing;bing" --add-data="bing.ico;." --add-data="bb.cmd;." -i bing.ico -c bb.py
 ```
