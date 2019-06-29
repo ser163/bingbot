@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
@@ -60,7 +61,9 @@ import scrapy.core.downloader.contextfactory
 from scrapy.pipelines.images import ImagesPipeline
 
 from PIL import Image
-import win32con
+import platform
+if platform.system() == 'Windows':
+    import win32con
 
 
 process = CrawlerProcess(get_project_settings())
