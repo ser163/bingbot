@@ -56,7 +56,13 @@ ROBOTSTXT_OBEY = False
 # }
 # 绝对路径
 import os
-prg_path = os.path.dirname(__file__)
+import platform
+if platform.system() == 'Windows':
+    prg_path = os.path.dirname(__file__)
+elif platform.system() == 'Darwin':
+    prg_path = os.getenv('HOME') + '/Pictures'
+else:
+    prg_path = os.getenv('HOME')
 IMAGES_STORE = prg_path
 ITEM_PIPELINES = {
     'bing.pipelines.BingPipeline': 300,

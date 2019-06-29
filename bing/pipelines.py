@@ -12,8 +12,12 @@ from scrapy.pipelines.images import ImagesPipeline
 
 if platform.system() == 'Windows':
     import win32file, win32api, win32gui
+    import win32con
+
+if platform.system() == 'Darwin':
+    import subprocess
 from PIL import Image
-import win32con
+
 import hashlib
 
 try:
@@ -25,6 +29,7 @@ from scrapy.utils.python import to_bytes
 
 
 class BingPipeline(ImagesPipeline):
+
     def get_media_requests(self, item, spider):
         print('=======================================================================================================')
         print(item['imgurl'])
@@ -37,6 +42,8 @@ class BingPipeline(ImagesPipeline):
         os_type = platform.system()
         if os_type == 'Windows':
             self.os_win(fullpath)
+        elif platform.system() == 'Darwin':
+            self.os_osx(fullpath)
         else:
             pass
 
@@ -47,6 +54,17 @@ class BingPipeline(ImagesPipeline):
         # 2拉伸适应桌面,0桌面居中
         win32api.RegSetValueEx(key, "TileWallpaper", 0, win32con.REG_SZ, "0")
         win32gui.SystemParametersInfo(win32con.SPI_SETDESKWALLPAPER, path, 1 + 2)
+
+    def os_osx(self, path):
+        SCRIPT = """/usr/bin/osascript<<END
+        tell application "Finder"
+        set desktop picture to POSIX file "%s"
+        end tell
+        END
+        """ % path
+        subprocess.Popen(SCRIPT, shell=True)
+
+
 
     def file_path(self, request, response=None, info=None):
         # start of deprecation warning block (can be removed in the future)
@@ -74,7 +92,10 @@ class BingPipeline(ImagesPipeline):
         # end of deprecation warning block
 
         image_guid = hashlib.sha1(to_bytes(url)).hexdigest()  # change to request.url after deprecation
-        return 'bg/%s.bmp' % (image_guid)
+        if platform.system() == 'Windows':
+            return 'bg/%s.bmp' % (image_guid)
+        else:
+            return 'bg/%s.jpg' % (image_guid)
 
     def convert_image(self, image, size=None):
         if image.format == 'PNG' and image.mode == 'RGBA':
@@ -94,5 +115,8 @@ class BingPipeline(ImagesPipeline):
             image.thumbnail(size, Image.ANTIALIAS)
 
         buf = BytesIO()
-        image.save(buf, 'bmp')
+        if platform.system() == 'Windows':
+            image.save(buf, 'bmp')
+        else:
+            image.save(buf, 'JPEG')
         return image, buf
