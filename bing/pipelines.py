@@ -11,12 +11,14 @@ from scrapy.pipelines.images import ImagesPipeline
 import win32file, win32api,win32gui
 from PIL import Image
 import win32con
+import hashlib
 
 try:
     from cStringIO import StringIO as BytesIO
 except ImportError:
     from io import BytesIO
 
+from scrapy.utils.python import to_bytes
 
 class BingPipeline(ImagesPipeline):
     def get_media_requests(self, item, spider):
@@ -36,7 +38,32 @@ class BingPipeline(ImagesPipeline):
         print(response['path'])
 
     def file_path(self, request, response=None, info=None):
-        return 'bg/bg.bmp'
+        ## start of deprecation warning block (can be removed in the future)
+        def _warn():
+            from scrapy.exceptions import ScrapyDeprecationWarning
+            import warnings
+            warnings.warn('ImagesPipeline.image_key(url) and file_key(url) methods are deprecated, '
+                          'please use file_path(request, response=None, info=None) instead',
+                          category=ScrapyDeprecationWarning, stacklevel=1)
+
+        # check if called from image_key or file_key with url as first argument
+        if not isinstance(request, Request):
+            _warn()
+            url = request
+        else:
+            url = request.url
+
+        # detect if file_key() or image_key() methods have been overridden
+        if not hasattr(self.file_key, '_base'):
+            _warn()
+            return self.file_key(url)
+        elif not hasattr(self.image_key, '_base'):
+            _warn()
+            return self.image_key(url)
+        ## end of deprecation warning block
+
+        image_guid = hashlib.sha1(to_bytes(url)).hexdigest()  # change to request.url after deprecation
+        return 'bg/%s.bmp' % (image_guid)
 
     def convert_image(self, image, size=None):
         if image.format == 'PNG' and image.mode == 'RGBA':
