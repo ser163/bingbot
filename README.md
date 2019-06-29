@@ -7,7 +7,7 @@ Bing Bot 是一个python scrapy 框架写的爬虫程序.可以实现同步bing�
 * 部署方便.
 * 无需配置即可使用.
 * 自动化运行,每天自动换桌面
-* 文艺气息浓郁,让桌面自动问一起来.
+* 文艺气息浓郁,让桌面自动换起来.
 ## 快速安装 ##
 
 ### 运行环境 ###
@@ -25,9 +25,13 @@ Bing Bot 是一个python scrapy 框架写的爬虫程序.可以实现同步bing�
  ```
 
 ### 打包 ###
-使用pyinstaller 命令在Windows下打包为exe
+- Windows 下,使用pyinstaller 命令在Windows下打包为exe
 ```
   pyinstaller --add-data="scrapy\mime.types;scrapy" --add-data="scrapy\VERSION;scrapy" --add-data="scrapy.cfg;." --add-data="bing;bing" --add-data="bb.cmd;." --add-data="install.cmd;." -i bing.ico -c bb.py
+```
+- Mac 下打包
+```buildoutcfg
+  pyinstaller --add-data="scrapy/mime.types:scrapy" --add-data="scrapy/VERSION:scrapy" --add-data="scrapy.cfg:." --add-data="bing:bing" --add-data="bb.sh:." -c bb.py
 ```
 
 ### 安装自动运行 ###
