@@ -12,7 +12,7 @@
 
 ## pyinstaller 打包:
 ```shell
-    pyinstaller --add-data="scrapy\mime.types;scrapy" --add-data="scrapy\VERSION;scrapy" --add-data="scrapy.cfg;." --add-data="bing;bing" --add-data="bing.ico;." --add-data="bb.cmd;." -i bing.ico -c bb.py
+    pyinstaller --add-data="scrapy\mime.types;scrapy" --add-data="scrapy\VERSION;scrapy" --add-data="scrapy.cfg;." --add-data="bing;bing" --add-data="bb.cmd;." --add-data="install.cmd;." -i bing.ico -c bb.py
 ```
 ## 安装自动运行
  右键install.cmd,用管理员权限打开,设置windows计划任务,自动修改壁纸,4小时运行一次.
