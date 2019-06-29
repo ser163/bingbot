@@ -6,9 +6,12 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 from scrapy import Request
-from . import  settings
+import platform
+from . import settings
 from scrapy.pipelines.images import ImagesPipeline
-import win32file, win32api,win32gui
+
+if platform.system() == 'Windows':
+    import win32file, win32api, win32gui
 from PIL import Image
 import win32con
 import hashlib
@@ -20,6 +23,7 @@ except ImportError:
 
 from scrapy.utils.python import to_bytes
 
+
 class BingPipeline(ImagesPipeline):
     def get_media_requests(self, item, spider):
         print('=======================================================================================================')
@@ -29,16 +33,23 @@ class BingPipeline(ImagesPipeline):
 
     def set_wall(self, response):
         baseroot = settings.IMAGES_STORE
+        fullpath = baseroot + '/' + response['path']
+        os_type = platform.system()
+        if os_type == 'Windows':
+            self.os_win(fullpath)
+        else:
+            pass
+
+    def os_win(self, path):
         key = win32api.RegOpenKeyEx(win32con.HKEY_CURRENT_USER,
                                     "Control Panel\\Desktop", 0, win32con.KEY_SET_VALUE)
         win32api.RegSetValueEx(key, "WallpaperStyle", 0, win32con.REG_SZ, "2")
         # 2拉伸适应桌面,0桌面居中
         win32api.RegSetValueEx(key, "TileWallpaper", 0, win32con.REG_SZ, "0")
-        win32gui.SystemParametersInfo(win32con.SPI_SETDESKWALLPAPER,baseroot +'/' +response['path'], 1 + 2)
-        print(response['path'])
+        win32gui.SystemParametersInfo(win32con.SPI_SETDESKWALLPAPER, path, 1 + 2)
 
     def file_path(self, request, response=None, info=None):
-        ## start of deprecation warning block (can be removed in the future)
+        # start of deprecation warning block (can be removed in the future)
         def _warn():
             from scrapy.exceptions import ScrapyDeprecationWarning
             import warnings
@@ -60,7 +71,7 @@ class BingPipeline(ImagesPipeline):
         elif not hasattr(self.image_key, '_base'):
             _warn()
             return self.image_key(url)
-        ## end of deprecation warning block
+        # end of deprecation warning block
 
         image_guid = hashlib.sha1(to_bytes(url)).hexdigest()  # change to request.url after deprecation
         return 'bg/%s.bmp' % (image_guid)
