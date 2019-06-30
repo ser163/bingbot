@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
@@ -58,13 +57,18 @@ import scrapy.core.downloader.contextfactory
 
 # 自己项目用到的
 # import scrapy.pipelines.images  # 用到图片管道
+import os
+import sys
 from scrapy.pipelines.images import ImagesPipeline
+# 切换工作目录,防止python库加载失败
+base_path = sys.path[1]
+print('Working directory: ' + base_path)
+os.chdir(base_path)
 
 from PIL import Image
 import platform
 if platform.system() == 'Windows':
     import win32con
-
 
 process = CrawlerProcess(get_project_settings())
 
