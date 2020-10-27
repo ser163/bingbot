@@ -10,7 +10,7 @@ certifi==2019.6.16
 cffi==1.12.3
 colorama==0.4.1
 constantly==15.1.0
-cryptography==2.7
+cryptography==3.2
 cssselect==1.0.3
 future==0.17.1
 hyperlink==19.0.0
